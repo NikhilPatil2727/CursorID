@@ -21,7 +21,7 @@ app.post('/generate', async (req, res) => {
   try {
     const { prompt } = req.body;
 
-    // ✅ Correct usage of `contents` for generateContent
+    // ✅ Send generation request
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
@@ -30,19 +30,20 @@ app.post('/generate', async (req, res) => {
           parts: [
             {
               text: `
-                You are an expert web developer. Create a complete, functional website based on the following description: 
-                "${prompt}"
+You are an expert web developer. Create a complete, functional website based on the following description: 
+"${prompt}"
 
-                Return ONLY a JSON object with these keys:
-                - html: complete HTML code
-                - css: complete CSS code
-                - js: complete JavaScript code
+Respond ONLY with a valid JSON object with these keys:
+- html: complete HTML code
+- css: complete CSS code
+- js: complete JavaScript code
 
-                Requirements:
-                1. The website must be fully responsive
-                2. Use modern, clean design
-                3. Include all necessary functionality
-                4. No placeholders - use actual content
+Requirements:
+1. The website must be fully responsive
+2. Use modern, clean design
+3. Include all necessary functionality
+4. No placeholders - use actual content
+5. No explanations or markdown formatting. Only return a raw JSON object.
               `
             }
           ]
@@ -50,15 +51,24 @@ app.post('/generate', async (req, res) => {
       ]
     });
 
-    // ✅ Extract text response
+    // ✅ Extract raw response text
     const text = response.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // ✅ Parse JSON content safely
-    const jsonStart = text.indexOf('{');
-    const jsonEnd = text.lastIndexOf('}') + 1;
-    const jsonString = text.substring(jsonStart, jsonEnd);
+    // ✅ Clean response (remove code blocks and trim)
+    const cleanedText = text
+      .replace(/```(?:json|js|javascript)?/gi, '')
+      .replace(/```/g, '')
+      .trim();
 
-    const code = JSON.parse(jsonString);
+    // ✅ Try parsing cleaned JSON string
+    let code;
+    try {
+      code = JSON.parse(cleanedText);
+    } catch (err) {
+      console.error("JSON parsing failed. Raw response:\n", cleanedText);
+      return res.status(500).json({ error: 'Invalid JSON format from AI' });
+    }
+
     res.json(code);
   } catch (error) {
     console.error('Generation error:', error);
@@ -67,5 +77,5 @@ app.post('/generate', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
 });
