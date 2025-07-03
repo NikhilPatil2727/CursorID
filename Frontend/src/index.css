@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f0f2f5;
+  color: #212529;
+  line-height: 1.6;
+}
+
+.editor-header button {
+  border-radius: 0;
+  background: transparent;
+  flex: 1;
+}
+
+.editor-header button.active {
+  background: #4361ee;
+}
