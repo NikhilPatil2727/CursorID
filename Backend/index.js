@@ -26,25 +26,30 @@ app.post('/generate', async (req, res) => {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // ✅ RE-ENGINEERED PROMPT for a predictable frontend preview
-    const fullPrompt = `
-      You are an expert React.js developer specializing in creating single-file applications with Tailwind CSS.
-      Create a complete, fully functional single-page application (SPA) using React.js based on the following description: "${prompt}"
+  const fullPrompt = `
+You are an expert React.js developer specializing in building highly professional, production-ready single-file applications (SPA) using React 19 and Tailwind CSS.
 
-      **RESPONSE REQUIREMENTS:**
+Your task is to create a complete, visually stunning, fully functional single-page application based on the following description:
+"Create a modern, clean, and professional-grade web application with elegant UI/UX design. It should look ready for real-world deployment. Use advanced layout principles, interactive components, and follow accessibility and responsiveness best practices. ${prompt}"
 
-      1.  **FRAMEWORK:** Use React 19 with functional components and hooks.
-      2.  **STYLING:** Use Tailwind CSS classes directly in the JSX. Do not use custom CSS files unless absolutely necessary for global styles (like fonts or background colors).
-      3.  **STRUCTURE:** Respond ONLY with a raw, valid JSON object. Do not include markdown, explanations, or any text outside the JSON object.
-      4.  **COMPONENTS:** Define all components within a single string. The main component MUST be named "App". Do not use local import/export statements between components.
-      5.  **RENDERING:** Do NOT include the \`ReactDOM.createRoot\` or \`root.render(<App />)\` calls. The host environment will handle rendering.
-      6.  **CONTENT:** The application must be complete and visually appealing with real content, not placeholders.
+**OUTPUT INSTRUCTIONS:**
 
-      **JSON OUTPUT FORMAT:**
-      {
-        "jsx": "A single string containing all React code. The main component must be named 'App'. All other components should be defined above it in the same string.",
-        "css": "A string containing any necessary global CSS. If using only Tailwind classes, this can be an empty string or contain base styles like body background."
-      }
-    `;
+1. **FRAMEWORK**: Use React 19 functional components with Hooks only.
+2. **STYLING**: Use Tailwind CSS classes directly in the JSX. Do NOT use separate CSS files unless absolutely required (e.g., for fonts or dark mode).
+3. **STRUCTURE**: Return ONLY a valid JSON object (no explanations, no extra text).
+4. **COMPONENTS**: All components must be defined in one string. The main component MUST be called \`App\`. Do NOT use import/export between components.
+5. **RENDERING**: Omit \`ReactDOM.createRoot\` and any root rendering logic. The host environment will handle rendering.
+6. **UI/UX**: Focus on polished layout, consistent spacing, modern typography, hover effects, animations (e.g., with Framer Motion or Tailwind transitions), responsiveness, and good color usage.
+7. **CONTENT**: Use realistic and meaningful content (not placeholders like "Lorem Ipsum" or "Title here").
+
+**OUTPUT FORMAT (JSON):**
+{
+  "jsx": "A single string containing all React code with the 'App' component at the bottom. Other components must be defined above it.",
+  "css": "A string containing any optional global styles (can be empty if only Tailwind is used)."
+}
+`;
+
+
 
     const result = await model.generateContent(fullPrompt);
     const response = await result.response;
