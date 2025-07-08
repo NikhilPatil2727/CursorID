@@ -154,6 +154,28 @@ const BuilderPage = () => {
         </div>
       )}
 
+      {/* Subtle Loading Overlay */}
+      {loading && (
+        <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm flex items-center justify-center">
+          <div className="text-center p-6 rounded-2xl bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 shadow-2xl">
+            <div className="flex flex-col items-center">
+              <div className="animate-pulse-slow mb-4">
+                <div className="bg-gradient-to-r from-blue-500 to-purple-600 w-16 h-16 rounded-full flex items-center justify-center">
+                  <svg className="w-8 h-8 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-xl font-medium text-white mb-2">Generating Your Website</h3>
+              <p className="text-gray-400 max-w-md">
+                AI is crafting your code based on your description. This usually takes 10-20 seconds...
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className={themeClasses.header}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center py-3 sm:py-4 gap-3 sm:gap-0">
@@ -216,7 +238,7 @@ const BuilderPage = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           <div className="space-y-4 sm:space-y-6">
-            <div className={themeClasses.card}>
+            <div className={`${themeClasses.card} ${loading ? 'shimmer-card' : ''}`}>
               <div className={themeClasses.cardInner}>
                 <div className="flex justify-between items-center mb-3 sm:mb-4">
                   <h2 className="text-lg sm:text-xl font-semibold flex items-center">
@@ -294,7 +316,7 @@ const BuilderPage = () => {
           </div>
 
           <div className="space-y-4 sm:space-y-6">
-            <div className={themeClasses.card}>
+            <div className={`${themeClasses.card} ${loading ? 'shimmer-text' : ''}`}>
               <div className={themeClasses.cardInner}>
                 <h2 className="text-base sm:text-lg font-semibold mb-3 flex items-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
@@ -302,13 +324,16 @@ const BuilderPage = () => {
                   </svg>
                   Describe Your Website
                 </h2>
-                <textarea
-                  className={themeClasses.input}
-                  placeholder="Example: 'Create a responsive landing page for a tech startup with a dark theme...'"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <textarea
+                    className={themeClasses.input}
+                    placeholder="Example: 'Create a responsive landing page for a tech startup with a dark theme...'"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    disabled={loading}
+                  />
+                  {loading && <div className="shimmer-text-content absolute inset-0 rounded-xl"></div>}
+                </div>
                 <div className={`mt-2 text-xs sm:text-sm flex items-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
@@ -318,7 +343,7 @@ const BuilderPage = () => {
               </div>
             </div>
 
-            <div className={`${themeClasses.card} overflow-hidden`}>
+            <div className={`${themeClasses.card} overflow-hidden ${loading ? 'shimmer-code' : ''}`}>
               <div className={themeClasses.cardInner + " h-full"}>
                 <div className="flex border-b border-gray-700">
                   {['html', 'css', 'js'].map((tab) => (
@@ -360,24 +385,28 @@ const BuilderPage = () => {
                     )}
                   </button>
                   <div className="p-3 sm:p-4 h-[350px] sm:h-[400px]">
-                    <Editor
-                      language={activeTab}
-                      value={activeTab === 'html' ? htmlCode : activeTab === 'css' ? cssCode : jsCode}
-                      onChange={(val) => {
-                        if (activeTab === 'html') setHtmlCode(val);
-                        if (activeTab === 'css') setCssCode(val);
-                        if (activeTab === 'js') setJsCode(val);
-                      }}
-                      theme={theme === 'dark' ? 'vs-dark' : 'light'}
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 13,
-                        lineNumbers: 'on',
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                        readOnly: loading
-                      }}
-                    />
+                    {loading ? (
+                      <div className="shimmer-code-content h-full w-full rounded-md"></div>
+                    ) : (
+                      <Editor
+                        language={activeTab}
+                        value={activeTab === 'html' ? htmlCode : activeTab === 'css' ? cssCode : jsCode}
+                        onChange={(val) => {
+                          if (activeTab === 'html') setHtmlCode(val);
+                          if (activeTab === 'css') setCssCode(val);
+                          if (activeTab === 'js') setJsCode(val);
+                        }}
+                        theme={theme === 'dark' ? 'vs-dark' : 'light'}
+                        options={{
+                          minimap: { enabled: false },
+                          fontSize: 13,
+                          lineNumbers: 'on',
+                          scrollBeyondLastLine: false,
+                          automaticLayout: true,
+                          readOnly: loading
+                        }}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -420,9 +449,96 @@ const BuilderPage = () => {
             opacity: 0;
           }
         }
+        
+        /* Card Shimmer Effect */
+        .shimmer-card {
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .shimmer-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1) 30%,
+            rgba(255, 255, 255, 0.2) 50%,
+            rgba(255, 255, 255, 0.1) 70%,
+            transparent
+          );
+          animation: shimmer-card 1.5s infinite;
+          z-index: 10;
+        }
+        
+        @keyframes shimmer-card {
+          100% {
+            left: 100%;
+          }
+        }
+        
+        /* Text Content Shimmer */
+        .shimmer-text {
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .shimmer-text-content {
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.1) 20%,
+            rgba(255, 255, 255, 0.15) 50%,
+            rgba(255, 255, 255, 0.1) 80%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          animation: shimmer-text 2s infinite;
+          z-index: 5;
+        }
+        
+        @keyframes shimmer-text {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        
+        /* Code Editor Shimmer */
+        .shimmer-code {
+          position: relative;
+          overflow: hidden;
+        }
+        
+        .shimmer-code-content {
+          background: 
+            linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent),
+            linear-gradient(rgba(0,0,0,0.1) 15px, transparent 15px),
+            linear-gradient(90deg, rgba(0,0,0,0.1) 15px, transparent 15px);
+          background-size: 
+            100% 100%,
+            100% 30px,
+            30px 30px;
+          animation: shimmer-code 1.5s infinite;
+        }
+        
+        @keyframes shimmer-code {
+          0% { background-position: -200% 0, 0 0, 0 0; }
+          100% { background-position: 200% 0, 0 0, 0 0; }
+        }
+        
+        /* Pulse animation for loading indicator */
+        .animate-pulse-slow {
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
+        }
       `}</style>
     </div>
   );
 };
-
 export default BuilderPage;
