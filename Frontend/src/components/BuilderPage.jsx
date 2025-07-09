@@ -13,14 +13,11 @@ const BuilderPage = () => {
   const [activeTab, setActiveTab] = useState('html');
   const [previewKey, setPreviewKey] = useState(0);
   const [showFullscreen, setShowFullscreen] = useState(false);
-  const [showShimmer, setShowShimmer] = useState(false);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
     
     setLoading(true);
-    setShowShimmer(true);
-    
     try {
       const res = await axios.post('http://localhost:5000/generate', { prompt });
       setHtmlCode(res.data.html || '');
@@ -29,10 +26,8 @@ const BuilderPage = () => {
       setPreviewKey(prev => prev + 1);
     } catch (err) {
       alert('Error generating code');
-    } finally {
-      setLoading(false);
-      setTimeout(() => setShowShimmer(false), 500);
     }
+    setLoading(false);
   };
 
   const getPreviewSrc = () => `
@@ -63,47 +58,12 @@ const BuilderPage = () => {
   }, [htmlCode, cssCode, jsCode]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white relative">
-      {/* Enhanced Shimmer Effect with Reloading Logo */}
-      {showShimmer && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-md pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-blue-500/10 to-transparent animate-shimmer"></div>
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="w-24 h-24 rounded-full bg-gray-900/80 border-2 border-blue-500/50 flex items-center justify-center animate-pulse">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center animate-spin">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-10 w-10 text-white"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18-8M22 12.5a10 10 0 0 1-18 8" />
-                </svg>
-              </div>
-            </div>
-            <p className="mt-6 text-xl font-medium text-blue-300 bg-gray-900/50 px-4 py-2 rounded-lg animate-pulse">
-              Building your website...
-            </p>
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white">
       {showFullscreen && (
         <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex flex-col">
           <div className="flex justify-between items-center p-4 bg-gray-900/80 border-b border-gray-700">
             <h2 className="text-xl font-semibold flex items-center">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-5 w-5 mr-2 text-blue-400" 
-                viewBox="0 0 20 20" 
-                fill="currentColor"
-                aria-hidden="true"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clipRule="evenodd" />
               </svg>
               Fullscreen Preview
@@ -111,27 +71,18 @@ const BuilderPage = () => {
             <button 
               className="bg-gray-700 hover:bg-gray-600 p-2 rounded-full transition-colors"
               onClick={() => setShowFullscreen(false)}
-              aria-label="Close fullscreen preview"
             >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="h-5 w-5" 
-                viewBox="0 0 20 20" 
-                fill="currentColor"
-                aria-hidden="true"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
           </div>
-          <div className="flex-grow">
-            <iframe
-              title="Fullscreen Preview"
-              srcDoc={getPreviewSrc()}
-              className="w-full h-full"
-              sandbox="allow-same-origin allow-scripts"
-            />
-          </div>
+          <iframe
+            title="Fullscreen Preview"
+            srcDoc={getPreviewSrc()}
+            className="w-full h-full"
+            sandbox="allow-same-origin allow-scripts"
+          />
         </div>
       )}
 
@@ -140,19 +91,13 @@ const BuilderPage = () => {
           <div className="flex justify-between items-center py-4">
             <Link to="/" className="flex items-center space-x-3">
               <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-2 rounded-lg animate-pulse">
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  className="h-8 w-8" 
-                  viewBox="0 0 24 24" 
-                  fill="none"
-                  aria-hidden="true"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 24 24" fill="none">
                   <path d="M10 20L14 4M18 8L22 12L18 16M6 16L2 12L6 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
               <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-300 to-indigo-300">
-                WebCraft
-              </h1>
+                  WebCraft
+                </h1>
             </Link>
             
             <button 
@@ -166,7 +111,7 @@ const BuilderPage = () => {
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -174,7 +119,7 @@ const BuilderPage = () => {
                 </>
               ) : (
                 <>
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
                   </svg>
                   <span>Generate Website</span>
@@ -192,7 +137,7 @@ const BuilderPage = () => {
               <div className="bg-gray-900/50 rounded-xl p-5">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-semibold flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                       <path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm11 1H6v8l4-2 4 2V6z" clipRule="evenodd" />
                     </svg>
                     Live Preview
@@ -219,7 +164,7 @@ const BuilderPage = () => {
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-900 z-0">
                       <div className="text-center">
                         <div className="bg-gray-800/50 rounded-full p-6 inline-block mb-6">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                           </svg>
                         </div>
@@ -235,9 +180,8 @@ const BuilderPage = () => {
                     <button 
                       className="preview-refresh bg-gray-800/80 backdrop-blur-sm p-2 rounded-full hover:bg-gray-700 transition-all"
                       onClick={() => setPreviewKey(prev => prev + 1)}
-                      aria-label="Refresh preview"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                       </svg>
                     </button>
@@ -246,9 +190,8 @@ const BuilderPage = () => {
                       className="bg-gray-800/80 backdrop-blur-sm p-2 rounded-full hover:bg-gray-700 transition-all"
                       onClick={() => setShowFullscreen(true)}
                       disabled={!htmlCode && !cssCode && !jsCode}
-                      aria-label="Open fullscreen preview"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 110-2h4a1 1 0 011 1v4a1 1 0 11-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 9a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 110 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v1.586l1.293-1.293a1 1 0 111.414 1.414L16.414 15H15a1 1 0 110-2h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 110-2h1.586l-1.293-1.293a1 1 0 111.414-1.414l1.293 1.293V13a1 1 0 011-1z" clipRule="evenodd" />
                       </svg>
                     </button>
@@ -263,7 +206,7 @@ const BuilderPage = () => {
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-1 shadow-xl">
               <div className="bg-gray-900/50 rounded-xl p-5 h-full">
                 <h2 className="text-lg font-semibold mb-3 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-purple-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-purple-400" viewBox="0 0 20 20" fill="currentColor">
                     <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                   </svg>
                   Describe Your Website
@@ -278,7 +221,7 @@ const BuilderPage = () => {
                   disabled={loading}
                 />
                 <div className="mt-3 text-sm text-gray-400 flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                   Be as descriptive as possible for better results
@@ -342,7 +285,7 @@ const BuilderPage = () => {
                 }}
                 disabled={loading}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
                 <span>Reset All</span>
@@ -352,7 +295,7 @@ const BuilderPage = () => {
         </div>
       </main>
 
-      <style>{`
+      <style jsx>{`
         .animate-ping-once {
           animation: ping 0.5s cubic-bezier(0,0,0.2,1);
         }
@@ -365,19 +308,6 @@ const BuilderPage = () => {
           75%, 100% {
             transform: scale(1.5);
             opacity: 0;
-          }
-        }
-        
-        .animate-shimmer {
-          animation: shimmer 1.5s infinite linear;
-        }
-        
-        @keyframes shimmer {
-          0% {
-            transform: translateX(-100%);
-          }
-          100% {
-            transform: translateX(100%);
           }
         }
       `}</style>
