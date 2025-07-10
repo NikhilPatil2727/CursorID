@@ -13,7 +13,7 @@ const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: [
     'https://astonishing-brioche-b2cfa1.netlify.app', // Your Netlify domain
-    'http://localhost:3000' // For local development
+    'http://localhost:5000' // For local development
   ],
   methods: ['POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
@@ -28,10 +28,6 @@ const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'healthy' });
-});
 
 // Pre-flight OPTIONS handler
 app.options('/generate', cors(corsOptions));
@@ -45,12 +41,10 @@ app.post('/generate', async (req, res) => {
 
     const { prompt } = req.body;
 
-    // Validate prompt length
-    if (prompt.length > 1000) {
-      return res.status(400).json({ error: 'Prompt too long (max 1000 chars)' });
-    }
+   
 
     // Send generation request
+  
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: [
@@ -73,15 +67,11 @@ Requirements:
 3. Include all necessary functionality
 4. No placeholders - use actual content
 5. No explanations or markdown formatting. Only return a raw JSON object.
-              `.trim()
+              `
             }
           ]
         }
-      ],
-      safetySettings: {
-        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-        threshold: "BLOCK_ONLY_HIGH"
-      }
+      ]
     });
 
     // Extract and clean response
