@@ -19,7 +19,7 @@ const BuilderPage = () => {
     
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:5000/generate', { prompt });
+      const res = await axios.post('https://cursorid-backend.onrender.com/generate', { prompt });
       setHtmlCode(res.data.html || '');
       setCssCode(res.data.css || '');
       setJsCode(res.data.js || '');
