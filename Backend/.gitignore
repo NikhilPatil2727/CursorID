@@ -1,1 +1,7 @@
-env
+.env
+
+.gitignore
+
+
+# Node modules
+node_modules
